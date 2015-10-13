@@ -721,7 +721,25 @@ vpIoTools::path(const char *pathname)
     if( path[i] == '/')	path[i] = '\\';
 #else
   for(unsigned int i=0 ; i<path.length() ; i++)
-    if( path[i] == '\\')	path[i] = '/';
+    switch(path[i]){
+    case '\\':
+        path[i] = '/';
+        break;
+    case '(':
+    case ')':
+    case '{':
+    case '}':
+    case '|':
+    case '&':
+    case ';':
+    case '<':
+    case '>':
+        path.insert(i,"\'");
+        i+=2;
+        path.insert(i,"\'");
+        break;
+    }
+
   wordexp_t exp_result;
   wordexp(path.c_str(), &exp_result, 0);
   path = std::string(exp_result.we_wordv[0]);
